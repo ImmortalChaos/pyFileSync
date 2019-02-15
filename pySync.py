@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 import os, time
 import hashlib
 import argparse
 import pickle
+import progressbar
 
 exclude_folder = ['.git', '.svn']
 
@@ -94,7 +96,7 @@ def search(dirname, fchk):
 	            ext = os.path.splitext(full_filename)[-1]
 	            fchk.appendFile(full_filename)
 	except :
-		print "Error"
+		pass
 
 def main():
 	parser = argparse.ArgumentParser(description='This program synchronizes two different folders.')
@@ -110,15 +112,25 @@ def main():
 	sourceFolder = args.source
 	targetFolder = args.target
 
+	print("Source Folder :", sourceFolder)
+	print("Target Folder :", targetFolder)
+	# Progress Bar
+	bar = progressbar.ProgressBar(maxval=20, widgets=[progressbar.Bar('█', '|', '|'), ' ', progressbar.Percentage()])
+	bar.start()
+	
 	folderSlotCount = 2
 	fchk = FileChecker(folderSlotCount)
+	bar.update(1)
+
 	fchk.appendFolder(sourceFolder, FOLDER_READ_ONLY)
 	search(sourceFolder, fchk)
+	bar.update(10)
 
 	fchk.appendFolder(targetFolder, FOLDER_SYNC)
 	search(targetFolder, fchk)
-	print "Source Folder :", sourceFolder
-	print "Target Folder :", targetFolder
+	bar.update(20)
+
+	bar.finish()
 
 if __name__=="__main__":
 	main()
