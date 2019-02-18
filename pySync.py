@@ -14,6 +14,7 @@ FOLDER_SYNC = 2
 
 FILE_STATUS_NORMAL= 0
 FILE_STATUS_DELETED = 1
+barValue = 1
 
 def md5sum_file(filename, blocksize=65536):
 	hash = hashlib.md5()
@@ -84,14 +85,27 @@ def isExcludeDir(dirName) :
 		return True
 	return False
 
-def search(dirname, fchk):
+def countFolder(dirname) :
+	cnt = 0
+	filenames = os.listdir(dirname)
+	for filename in filenames:
+		full_filename = os.path.join(dirname, filename)
+		if os.path.isdir(full_filename) and not isExcludeDir(filename):
+			cnt+=1
+	return cnt
+
+def search(dirname, fchk, bar, depth=1):
+	global barValue
 	try:
 	    filenames = os.listdir(dirname)
 	    for filename in filenames:
 	        full_filename = os.path.join(dirname, filename)
 	        if os.path.isdir(full_filename) :
 	        	if not isExcludeDir(filename):
-	        		search(full_filename, fchk)
+	        		time.sleep(0.005)
+	        		barValue += 1
+	        		bar.update(barValue)
+	        		search(full_filename, fchk, bar, depth+1)
 	        else:
 	            ext = os.path.splitext(full_filename)[-1]
 	            fchk.appendFile(full_filename)
@@ -112,10 +126,14 @@ def main():
 	sourceFolder = args.source
 	targetFolder = args.target
 
+	cntBar = 1
 	print("Source Folder :", sourceFolder)
 	print("Target Folder :", targetFolder)
+	cntBar += countFolder(sourceFolder)
+	cntBar += countFolder(targetFolder)
+
 	# Progress Bar
-	bar = progressbar.ProgressBar(maxval=20, widgets=[progressbar.Bar('█', '|', '|'), ' ', progressbar.Percentage()])
+	bar = progressbar.ProgressBar(maxval=cntBar, widgets=[progressbar.Bar('█', '|', '|'), ' ', progressbar.Percentage()])
 	bar.start()
 	
 	folderSlotCount = 2
@@ -123,13 +141,12 @@ def main():
 	bar.update(1)
 
 	fchk.appendFolder(sourceFolder, FOLDER_READ_ONLY)
-	search(sourceFolder, fchk)
-	bar.update(10)
+	search(sourceFolder, fchk, bar)
 
 	fchk.appendFolder(targetFolder, FOLDER_SYNC)
-	search(targetFolder, fchk)
-	bar.update(20)
+	search(targetFolder, fchk, bar)
 
+	bar.update(cntBar)
 	bar.finish()
 
 if __name__=="__main__":
