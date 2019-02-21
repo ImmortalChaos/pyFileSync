@@ -25,8 +25,8 @@ def md5sum_file(filename, blocksize=65536):
 
 def md5sum_str(text):
 	hash = hashlib.md5()
-	m.update(text)
-	return m.hexdigest()
+	hash.update(text)
+	return hash.hexdigest()
 
 class FileChecker:
 	def __init__(self, folderSlotCount):
