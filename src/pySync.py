@@ -35,6 +35,7 @@ class FileChecker:
 		self.currentFilePath = ""
 		self.folderList = list(map(lambda n: {"Index":n, "Mode":FOLDER_NOT_SET, "Path":""}, range(folderSlotCount)))
 		self.fileList = list(map(lambda n: {}, range(folderSlotCount)))
+		self.baseList = {}
 
 	def __del__(self) :
 		pass
@@ -70,6 +71,18 @@ class FileChecker:
 
 		newPath = path[len(self.currentFilePath):]
 		self.fileList[self.currentFilePathIndex][newPath] = {"Hash":fileHash, "CTime":createTime, "MTime":modifiedTime, "ATime":accessTime, "Status":FILE_STATUS_NORMAL}
+
+	def updateBaseFile(self, folderidx, filename, fileinfo) :
+		if filename in self.baseList and self.baseList[filename]["MTime"] >= fileinfo["MTime"] :
+			return
+		self.baseList[filename] = {"FolderId":folderidx, "Hash":fileinfo["Hash"], "MTime":fileinfo["MTime"]}
+
+	def renewBaseFile(self) :
+		for folderInfo in self.folderList :
+			idx = folderInfo['Index']
+			for f in self.fileList[idx] :
+				fileInfo = self.fileList[idx][f]
+				self.updateBaseFile(idx, f, fileInfo)
 
 	def saveStatus(self):
 		with open('data.pickle', 'wb') as f:
@@ -146,6 +159,7 @@ def main():
 	fchk.appendFolder(targetFolder, FOLDER_SYNC)
 	search(targetFolder, fchk, bar)
 
+	fchk.renewBaseFile()
 	bar.update(cntBar)
 	bar.finish()
 
