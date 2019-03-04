@@ -6,8 +6,7 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - python test/test.py
-  - coverage xml test/test.py
+  - pytest --cov=test/
 
 after_sccess:
   - coveralls

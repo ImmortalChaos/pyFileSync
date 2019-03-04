@@ -1,2 +1,5 @@
 progressbar2
-coverage
+pytest
+pytest-cov
+coveralls
+
