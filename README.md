@@ -1,12 +1,12 @@
 # pyFileSync
 python file sync
 
-# Required
+## Required
 * need ProgressBar
 
-# Introduction
+## Introduction
 
-# How to use
+## How to use
 
-# License
+## License
 
