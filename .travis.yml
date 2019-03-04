@@ -7,7 +7,7 @@ install:
 
 script:
   - python test/test.py
-  - coverage xml test/test.py
+  - coverage run --source=src test/test.py
 
 after_success:
   - coveralls
