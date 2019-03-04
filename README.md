@@ -4,11 +4,10 @@
 python file sync
 
 ## Required
-* need ProgressBar
+  * need ProgressBar
 
 ## Introduction
 
 ## How to use
 
 ## License
-
