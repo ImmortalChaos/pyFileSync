@@ -5,7 +5,9 @@ python :
 install:
   - pip install -r requirements.txt
 
-script: python test/test.py
+script:
+  - python test/test.py
+  - coverage xml test/test.py
 
 after_sccess:
   - coveralls
