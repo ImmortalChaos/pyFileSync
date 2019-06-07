@@ -11,4 +11,6 @@ python file sync
 
 ## How to use
 
+python pySync.py
+
 ## License
